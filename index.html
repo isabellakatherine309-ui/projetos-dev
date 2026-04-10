@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Campanhas · 10K+ Performance</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap');
+
+    :root {
+      --bg: #0a0c10;
+      --surface: #111518;
+      --surface2: #1a1d24;
+      --border: #22262f;
+      --glass: rgba(255,255,255,0.03);
+      --accent-blue: #5b6eff;
+      --accent-success: #00e5c0;
+      --accent-fail: #ff6b6b;
+      --accent-warn: #f9c74f;
+      --text: #e8eaf6;
+      --text-muted: #6b7280;
+      --shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* HEADER */
+    header {
+      padding: 1.5rem 2.5rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+    }
+
+    .header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo-icon {
+      width: 3.5rem;
+      height: 3.5rem;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-success));
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 1.4rem;
+      box-shadow: var(--shadow);
+    }
+
+    .logo h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--text), var(--text-muted));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .logo span {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-success));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* MAIN */
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+    }
+
+    /* INPUT SECTION */
+    .input-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 3rem;
+      margin-bottom: 3rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+    }
+
+    .input-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-success));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .field {
+      position: relative;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .field-input {
+      width: 100%;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.25rem 1.5rem;
+      color: var(--text);
+      font-size: 1.125rem;
+      font-weight: 500;
+      font-family: inherit;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .field-input:focus {
+      outline: none;
+      border-color: var(--accent-success);
+      box-shadow: 0 0 0 4px rgba(0,229,192,0.1);
+      transform: translateY(-2px);
+    }
+
+    .field-input::placeholder { color: var(--text-muted); }
+
+    /* BUTTONS */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-success), var(--accent-blue));
+      border: none;
+      border-radius: 16px;
+      padding: 1.25rem 3rem;
+      color: #000;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.125rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 15px 35px rgba(0,229,192,0.3);
+      height: 4rem;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-4px);
+      box-shadow: 0 25px 50px rgba(0,229,192,0.4);
+    }
+
+    .btn-primary:active { transform: translateY(-2px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .btn-secondary {
+      background: transparent;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1rem 2rem;
+      color: var(--text);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: inherit;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--accent-success);
+      color: var(--accent-success);
+      transform: translateY(-2px);
+    }
+
+    /* DASHBOARD */
+    .dashboard { display: none; animation: slideUp 0.6s ease-out; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .dashboard-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+
+    /* KPI CARDS */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .kpi-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      backdrop-filter: blur(20px);
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      border-color: var(--accent-blue);
+      box-shadow: var(--shadow);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--kpi-accent), transparent);
+    }
+
+    .kpi-card.total { --kpi-accent: var(--accent-blue); }
+    .kpi-card.success { --kpi-accent: var(--accent-success); }
+    .kpi-card.fail { --kpi-accent: var(--accent-fail); }
+    .kpi-card.rate { --kpi-accent: var(--accent-warn); }
+
+    .kpi-icon {
+      position: absolute;
+      top: 2rem;
+      right: 2rem;
+      font-size: 2.5rem;
+      opacity: 0.1;
+    }
+
+    .kpi-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    .kpi-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 3.5rem;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--text), var(--text-muted));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .kpi-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* CHARTS */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      backdrop-filter: blur(20px);
+    }
+
+    .chart-title {
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-container {
+      height: 20rem;
+      position: relative;
+    }
+
+    /* PROGRESS */
+    .progress-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .progress-bar {
+      flex: 1;
+      height: 1rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent-success), var(--accent-blue));
+      border-radius: 8px;
+      transition: width 1s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .progress-text {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--accent-success);
+      min-width: 4rem;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .main { padding: 1.5rem 1rem; }
+      .input-card { padding: 2rem; }
+      .input-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: 1fr; }
+      .dashboard-title { font-size: 2rem; }
+      .kpi-value { font-size: 2.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">📊</div>
+        <h1>Campanha<span>Hub</span></h1>
+      </div>
+      <span>Performance Analytics · 10K+ Scale</span>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- INPUT -->
+    <div class="input-card" id="inputCard">
+      <h2 class="input-title">📈 Nova Análise</h2>
+      <div class="input-grid">
+        <div class="field">
+          <label class="field-label">Total Clientes</label>
+          <input class="field-input" type="number" id="totalClientes" placeholder="10.000" min="0">
+        </div>
+        <div class="field">
+          <label class="field-label">Enviados Sucesso</label>
+          <input class="field-input" type="number" id="enviadosSucesso" placeholder="8.250" min="0">
+        </div>
+        <div class="field">
+          <label class="field-label">Nome Campanha</label>
+          <input class="field-input" type="text" id="nomeCampanha" placeholder="Black Friday Q4">
+        </div>
+        <div class="field">
+          <label class="field-label">Data</label>
+          <input class="field-input" type="date" id="dataCampanha">
+        </div>
+      </div>
+      <button class="btn-primary" id="btnAnalisar" disabled>🚀 Analisar Campanha</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <section class="dashboard" id="dashboard">
+      <div class="dashboard-header">
+        <h1 class="dashboard-title" id="dashboardTitle">Resultados</h1>
+        <button class="btn-secondary" id="btnReset">🔄 Nova Análise</button>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi-card total">
+          <div class="kpi-icon">👥</div>
+          <div>
+            <div class="kpi-label">Total Clientes</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-subtitle" id="kpiTotalSub">Base total</div>
+          </div>
+        </div>
+        <div class="kpi-card success">
+          <div class="kpi-icon">✅</div>
+          <div>
+            <div class="kpi-label">Sucesso</div>
+            <div class="kpi-value" id="kpiSucesso">0</div>
+            <div class="kpi-subtitle" id="kpiSucessoSub">Entregues</div>
+          </div>
+        </div>
+        <div class="kpi-card fail">
+          <div class="kpi-icon">❌</div>
+          <div>
+            <div class="kpi-label">Falhas (Auto)</div>
+            <div class="kpi-value" id="kpiFalhas">0</div>
+            <div class="kpi-subtitle" id="kpiFalhasSub">Total - Sucesso</div>
+          </div>
+        </div>
+        <div class="kpi-card rate">
+          <div class="kpi-icon">📊</div>
+          <div>
+            <div class="kpi-label">Taxa Sucesso</div>
+            <div class="kpi-value" id="kpiTaxa">0%</div>
+            <div class="kpi-subtitle" id="kpiTaxaStatus">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="charts-grid">
+        <div class="chart-card">
+          <div class="chart-title">📊 Distribuição</div>
+          <div class="chart-container">
+            <canvas id="pieChart"></canvas>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title">🎯 Performance</div>
+          <div class="chart-container">
+            <canvas id="barChart"></canvas>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <span class="progress-text" id="progressText">0%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    class DashboardScale {
+      constructor() {
+        this.data = {
+          totalClientes: 0,
+          enviadosSucesso: 0,
+          falhas: 0,
+          taxa: 0,
+          nome: '',
+          data: ''
+        };
+        this.charts = {};
+        this.init();
+      }
+
+      init() {
+        this.bindEvents();
+        this.updateButtonState();
+      }
+
+      bindEvents() {
+        const inputs = ['totalClientes', 'enviadosSucesso', 'nomeCampanha', 'dataCampanha'];
+        
+        inputs.forEach(id => {
+          document.getElementById(id).addEventListener('input', () => {
+            this.debounce(this.updateButtonState, 200)();
+            this.liveCalculate();
+          });
+        });
+
+        document.getElementById('btnAnalisar').addEventListener('click', () => this.analyze());
+        document.getElementById('btnReset').addEventListener('click', () => this.reset());
+      }
+
+      debounce(fn, ms) {
+        let timeout;
+        return () => {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => fn(), ms);
+        };
